@@ -89,17 +89,25 @@ func transcriptHandler(w http.ResponseWriter, r *http.Request) {
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(&transcript)
 	if err != nil {
-		fmt.Println("error:", err)
+		fmt.Printf("Error decoding json body: %s\n", err)
+		http.Error(w, "Error decoding json body: "+err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	// if message is present create RT ticket of the transcript.
 	if len(transcript.Messages) > 0 {
 		rtConn = rtgo.NewRT(config.URL, config.Username, config.Password)
-		rtConn.CreateTicket(
+		_, err = rtConn.CreateTicket(
 			config.Queue,
 			transcript.VisitorEmail,
 			"Live support transcript - "+transcript.VisitorName,
 			transcript.TextBody)
+
+		if err != nil {
+			fmt.Printf("Error creating ticket in RT: %s\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -119,12 +127,19 @@ func offlineHandler(w http.ResponseWriter, r *http.Request) {
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(&message)
 	if err != nil {
-		fmt.Println("error:", err)
+		fmt.Printf("Error decoding json body: %s\n", err)
+		http.Error(w, "Error decoding json body: "+err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	//Create RT ticket of message
 	if message.Message != "" {
 		rtConn = rtgo.NewRT(config.URL, config.Username, config.Password)
-		rtConn.CreateTicket(config.Queue, message.Email, message.Subject, message.Message)
+		_, err = rtConn.CreateTicket(config.Queue, message.Email, message.Subject, message.Message)
+		if err != nil {
+			fmt.Printf("Error creating ticket in RT: %s\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 }
