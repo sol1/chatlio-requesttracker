@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -19,25 +17,15 @@ type rtConfig struct {
 	Queue    string
 }
 
-var configFileName string
 var config rtConfig
 var rtConn *rtgo.RT
 
 //initialize application flags, load user details from config file.
 func init() {
-	flag.StringVar(&configFileName, "config", "config.json", "Path to config file.")
-	flag.Parse()
-
-	f, err := os.Open(configFileName)
-	if err != nil {
-		log.Fatal("Error loading config file: ", err)
-	}
-
-	dec := json.NewDecoder(f)
-	err = dec.Decode(&config)
-	if err != nil {
-		fmt.Println("Error decoding config file:", err)
-	}
+	config.URL = os.Getenv("RT_URL")
+	config.Username = os.Getenv("RT_USERNAME")
+	config.Password = os.Getenv("RT_PASSWORD")
+	config.Queue = os.Getenv("RT_QUEUE")
 }
 
 //Main runs http server if appropriate flags specified
