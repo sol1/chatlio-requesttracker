@@ -18,6 +18,12 @@ A listener for chatlio, that creates a new ticket in RT containing the conversat
  * `RT_PASSWORD`: secret
  * `RT_QUEUE`: name of the RT queue
 
+### Run using Docker
+
+```
+docker run -p 8080:8080 --name chatlio-rt-test --env RT_URL="https://rt.example.com" --env RT_USERNAME="john" --env RT_PASSWORD="secret" --env RT_QUEUE="general" sol1/chatlio-rt
+```
+
 ### Simulate a post from Chatlio
 
 ```
