@@ -31,8 +31,7 @@ func init() {
 //Main runs http server if appropriate flags specified
 func main() {
 	if config.URL == "" {
-		fmt.Println("Looks like your configuration file is incomplete.")
-		fmt.Println("An RT URL MUST be supplied.")
+		fmt.Println("You must define environment: RT_URL, RT_USERNAME, RT_PASSWORD and RT_QUEUE")
 	} else {
 		fmt.Println("Server running.")
 		http.HandleFunc("/transcript", transcriptHandler)
